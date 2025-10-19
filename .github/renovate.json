@@ -1,0 +1,3 @@
+{
+  "extends": ["github>yuckabug/renovate-config"]
+}
