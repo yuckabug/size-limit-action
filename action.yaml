@@ -1,0 +1,45 @@
+# yaml-language-server: $schema=https://json.schemastore.org/github-action.json
+
+name: 'size-limit-action'
+description: 'size-limit action'
+author: 'Elijah Passmore <elijah.passmore@yuckabug.org>'
+branding:
+  icon: 'activity'
+  color: 'green'
+inputs:
+  github_token:
+    required: true
+    description: 'The GitHub access token'
+  build_script:
+    required: false
+    # By default, we'll use the `build` script
+    default: "build"
+    description: "The script used to build the project"
+  clean_script:
+    required: false
+    description: "The script used to clean up the build directory"
+  skip_step:
+    required: false
+    # By default, we will perform both the install and build steps
+    # There are occasions where one may be skipped, such as when the project is already built
+    description: "The step to skip, either `install` or `build`"
+  directory:
+    required: false
+    # By default, we will run the script in the root directory
+    description: "The subdirectory to run the script in"
+  windows_verbatim_arguments:
+    required: false
+    description: "Execute `size-limit` with the option `windowsVerbatimArguments`"
+    default: "true"
+  script:
+    required: false
+    # The script used to generate size-limit results
+    default: "npx size-limit --json"
+    description: "The script used to generate size-limit results"
+  package_manager:
+    required: false
+    # This is detected automatically if not provided, but can also be overridden
+    description: "The package manager used to run the build and install commands. If not provided, the manager will be auto detected. Example values: `yarn`, `npm`, `pnpm`, `bun`, `deno`."
+runs:
+  using: 'node20'
+  main: 'dist/index.js'
