@@ -1,0 +1,5 @@
+pre-commit:
+  parallel: true
+  commands:
+    secrets:
+      run: trufflehog git file://. --since-commit HEAD --only-verified --fail
