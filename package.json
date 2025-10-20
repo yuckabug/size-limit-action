@@ -2,6 +2,14 @@
   "name": "size-limit-action",
   "version": "0.1.0",
   "private": "true",
+  "description": "A GitHub Action that runs size-limit to analyze bundle sizes and reports results as PR comments.",
+  "author": "Elijah Passmore <elijah.passmore@yuckabug.org>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yuckabug/size-limit-action.git"
+  },
+  "homepage": "https://yuckabug.org",
   "module": "src/index.ts",
   "main": "dist/index.js",
   "type": "module",
