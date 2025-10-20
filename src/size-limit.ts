@@ -98,12 +98,13 @@ export async function execSizeLimit(options: ExecSizeLimitOptions): Promise<Exec
 
   // Determine the working directory
   // If worktreeDirectory is provided, use it as the base
-  // If directory is also provided, combine them
+  // If directory is also provided (a subdirectory), combine them
+  // Otherwise, fall back to process.cwd() when no worktree or directory is specified
   const workingDirectory = worktreeDirectory
     ? directory
       ? path.join(worktreeDirectory, directory)
       : worktreeDirectory
-    : directory;
+    : directory || process.cwd();
 
   // If `branch` is provided and no worktree is being used, checkout the branch
   // When using worktrees, the branch is already checked out in the worktree directory

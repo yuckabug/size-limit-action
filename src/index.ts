@@ -29,7 +29,7 @@ async function run(): Promise<void> {
     const cleanScriptInput = getInput("clean_script", { required: false });
     const scriptInput = getInput("script", { required: false });
     const packageManagerInput = getInput("package_manager", { required: false });
-    const directoryInput = getInput("directory", { required: false }) || process.cwd();
+    const directoryInput = getInput("directory", { required: false });
     const windowsVerbatimArgumentsInput = getInput("windows_verbatim_arguments", { required: false }) === "true";
 
     // Validate skip step
