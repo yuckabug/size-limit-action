@@ -9,7 +9,7 @@ import {
   updateSizeLimitComment,
 } from "./comment";
 import { formatResults, parseResults, type SizeLimitResult } from "./format-size-limit";
-import { createWorktree, removeWorktree } from "./git";
+import { createWorktree, fetchBranch, removeWorktree } from "./git";
 import { type PackageManager, packageManagerFromStringToEnum } from "./package-manager";
 import { execSizeLimit } from "./size-limit";
 
@@ -52,7 +52,6 @@ async function run(): Promise<void> {
     // For comparison, we need to:
     // 1. Execute the `size-limit` command on the base branch
     // 2. Execute the `size-limit` command on the current branch
-    // We use git worktrees to run both branches in parallel for better performance
 
     // Create temporary directories for worktrees
     const baseWorktreePath = path.join(process.cwd(), ".git-worktree-base");
@@ -65,13 +64,16 @@ async function run(): Promise<void> {
     let headHash: string;
 
     try {
+      await fetchBranch(pullRequest.base.ref);
+      await fetchBranch(pullRequest.head.ref);
+
       // Create worktrees for both branches
       await Promise.all([
         createWorktree(pullRequest.base.ref, baseWorktreePath),
         createWorktree(pullRequest.head.ref, headWorktreePath),
       ]);
 
-      // Run size-limit on both branches
+      // Run size-limit on both branches in parallel
       const [baseResult, headResult] = await Promise.all([
         execSizeLimit({
           branch: pullRequest.base.ref,

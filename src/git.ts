@@ -37,15 +37,13 @@ export async function fetchBranch(branch: string, cwd?: string): Promise<void> {
 
 /**
  * Create a git worktree for a specific branch in a temporary directory.
+ * Note: The branch must already be fetched before calling this function.
  * @param branch - The branch to checkout in the worktree.
  * @param worktreePath - The path where the worktree should be created.
  * @param cwd - The working directory to run the command in (the main repo).
  */
 export async function createWorktree(branch: string, worktreePath: string, cwd?: string): Promise<void> {
   try {
-    // First, fetch the branch
-    await fetchBranch(branch, cwd);
-
     // Create the worktree pointing to origin/${branch}
     await exec("git", ["worktree", "add", worktreePath, `origin/${branch}`], {
       cwd,
