@@ -23,7 +23,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "2.2.6",
-    "@size-limit/preset-app": "^11.2.0",
+    "@size-limit/preset-app": "11.2.0",
     "@types/bun": "latest",
     "lefthook": "1.13.6",
     "npm-run-all2": "8.0.4",
