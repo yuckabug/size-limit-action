@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=https://json.schemastore.org/github-action.json
 
-name: "Run Size Limit"
+name: "Track Size Limit in PRs"
 description: "A GitHub Action that runs size-limit to analyze bundle sizes and reports results as PR comments."
 author: 'Elijah Passmore <elijah.passmore@yuckabug.org>'
 branding:
