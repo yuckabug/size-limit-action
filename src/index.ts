@@ -79,8 +79,18 @@ async function run(): Promise<void> {
     let base: Record<string, SizeLimitResult>;
     let current: Record<string, SizeLimitResult>;
 
+    // Try to parse base results, but don't fail if it's not available
+    // This allows the action to work even if the base branch doesn't have size-limit configured
     try {
       base = parseResults(baseOutput);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      warning(`Could not parse base branch size-limit results. Skipping size-limit comment. ${message}`);
+      return;
+    }
+
+    // Parse current results - this one must succeed
+    try {
       current = parseResults(output);
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
