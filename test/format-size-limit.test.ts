@@ -7,13 +7,13 @@ describe("calculateChange", () => {
       expect(calculateChange(0, 100)).toEqual({
         value: 100,
         isPositive: true,
-        pretty: "+100% ▲",
+        pretty: "+100% 🔴",
       });
 
       expect(calculateChange(0, 0)).toEqual({
         value: 100,
         isPositive: true,
-        pretty: "+100% ▲",
+        pretty: "+100% 🔴",
       });
     });
   });
@@ -23,19 +23,19 @@ describe("calculateChange", () => {
       expect(calculateChange(100, 150)).toEqual({
         value: 50,
         isPositive: true,
-        pretty: "+50% ▲",
+        pretty: "+50% 🔴",
       });
 
       expect(calculateChange(100, 200)).toEqual({
         value: 100,
         isPositive: true,
-        pretty: "+100% ▲",
+        pretty: "+100% 🔴",
       });
 
       expect(calculateChange(10, 1000)).toEqual({
         value: 9900,
         isPositive: true,
-        pretty: "+9900% ▲",
+        pretty: "+9900% 🔴",
       });
     });
 
@@ -43,11 +43,11 @@ describe("calculateChange", () => {
       expect(calculateChange(1000, 1005)).toEqual({
         value: 0.5,
         isPositive: true,
-        pretty: "+0.5% ▲",
+        pretty: "+0.5% 🔴",
       });
 
-      expect(calculateChange(10000, 10001).pretty).toBe("+0.01% ▲");
-      expect(calculateChange(100000, 100001).pretty).toBe("+0.01% ▲");
+      expect(calculateChange(10000, 10001).pretty).toBe("+0.01% 🔴");
+      expect(calculateChange(100000, 100001).pretty).toBe("+0.01% 🔴");
     });
   });
 
@@ -56,19 +56,19 @@ describe("calculateChange", () => {
       expect(calculateChange(100, 50)).toEqual({
         value: -50,
         isPositive: false,
-        pretty: "-50% ▼",
+        pretty: "-50% 🟢",
       });
 
       expect(calculateChange(100, 0)).toEqual({
         value: -100,
         isPositive: false,
-        pretty: "-100% ▼",
+        pretty: "-100% 🟢",
       });
 
       expect(calculateChange(1000, 10)).toEqual({
         value: -99,
         isPositive: false,
-        pretty: "-99% ▼",
+        pretty: "-99% 🟢",
       });
     });
 
@@ -76,11 +76,11 @@ describe("calculateChange", () => {
       expect(calculateChange(1000, 995)).toEqual({
         value: -0.5,
         isPositive: false,
-        pretty: "-0.5% ▼",
+        pretty: "-0.5% 🟢",
       });
 
-      expect(calculateChange(10000, 9999).pretty).toBe("-0.01% ▼");
-      expect(calculateChange(100000, 99999).pretty).toBe("-0.01% ▼");
+      expect(calculateChange(10000, 9999).pretty).toBe("-0.01% 🟢");
+      expect(calculateChange(100000, 99999).pretty).toBe("-0.01% 🟢");
     });
   });
 
@@ -89,16 +89,16 @@ describe("calculateChange", () => {
       expect(calculateChange(100, 100)).toEqual({
         value: 0,
         isPositive: false,
-        pretty: "-0% ▼",
+        pretty: "-0% 🟢",
       });
     });
   });
 
   describe("decimal precision", () => {
     test("applies ceiling rounding to 2 decimal places in pretty string", () => {
-      expect(calculateChange(100, 123.456).pretty).toBe("+23.46% ▲");
-      expect(calculateChange(10000, 12300.1).pretty).toBe("+23.01% ▲");
-      expect(calculateChange(100, 150.5).pretty).toBe("+50.5% ▲");
+      expect(calculateChange(100, 123.456).pretty).toBe("+23.46% 🔴");
+      expect(calculateChange(10000, 12300.1).pretty).toBe("+23.01% 🔴");
+      expect(calculateChange(100, 150.5).pretty).toBe("+50.5% 🔴");
     });
   });
 
@@ -107,13 +107,13 @@ describe("calculateChange", () => {
       // -100 to -50: isPositive based on current > base
       expect(calculateChange(-100, -50)).toMatchObject({
         isPositive: true,
-        pretty: "+50% ▲",
+        pretty: "+50% 🔴",
       });
 
       // -100 to -150: isPositive based on current < base
       expect(calculateChange(-100, -150)).toMatchObject({
         isPositive: false,
-        pretty: "-50% ▼",
+        pretty: "-50% 🟢",
       });
     });
 
@@ -121,13 +121,13 @@ describe("calculateChange", () => {
       expect(calculateChange(-100, 100)).toMatchObject({
         value: -200,
         isPositive: true,
-        pretty: "+200% ▲",
+        pretty: "+200% 🔴",
       });
 
       expect(calculateChange(100, -100)).toMatchObject({
         value: -200,
         isPositive: false,
-        pretty: "-200% ▼",
+        pretty: "-200% 🟢",
       });
     });
   });
@@ -145,8 +145,8 @@ describe("calculateChange", () => {
     });
 
     test("pretty string format is valid", () => {
-      expect(calculateChange(100, 150).pretty).toMatch(/^\+[\d.]+% ▲$/);
-      expect(calculateChange(100, 50).pretty).toMatch(/^-[\d.]+% ▼$/);
+      expect(calculateChange(100, 150).pretty).toMatch(/^\+[\d.]+% 🔴$/);
+      expect(calculateChange(100, 50).pretty).toMatch(/^-[\d.]+% 🟢$/);
     });
   });
 });
@@ -316,7 +316,7 @@ describe("formatResults", () => {
       expect(result[0]).toEqual(["Path", "Size"]);
       expect(result[1]?.[0]).toBe("index.js");
       expect(result[1]?.[1]).toContain("1.5 kB");
-      expect(result[1]?.[1]).toContain("+50% ▲");
+      expect(result[1]?.[1]).toContain("+50% 🔴");
     });
 
     test("formats multiple size comparisons", () => {
@@ -354,7 +354,7 @@ describe("formatResults", () => {
       const result = formatResults(base, current);
 
       expect(result[1]?.[0]).toBe("removed.js");
-      expect(result[1]?.[1]).toContain("-100% ▼");
+      expect(result[1]?.[1]).toContain("-100% 🟢");
     });
 
     test("handles both new and removed files", () => {
@@ -479,8 +479,8 @@ describe("formatResults", () => {
 
       const result = formatResults(base, current);
 
-      expect(result[1]?.[2]).toContain("+50% ▲");
-      expect(result[1]?.[3]).toContain("+50% ▲");
+      expect(result[1]?.[2]).toContain("+50% 🔴");
+      expect(result[1]?.[3]).toContain("+50% 🔴");
     });
   });
 

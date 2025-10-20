@@ -36,7 +36,7 @@ export interface Change {
  */
 function formatChange(value: number, isPositive: boolean): Change {
   const formatted = Math.ceil(Math.abs(value) * 100) / 100;
-  const emoji = isPositive ? "▲" : "▼";
+  const emoji = isPositive ? "🔴" : "🟢";
   return {
     value,
     isPositive,
