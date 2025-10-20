@@ -1,7 +1,8 @@
 [files]
 extend-exclude = [
     "*",
-    "LICENSE",
+    "!LICENSE",
+    "!NOTICE.md",
     "!README.md",
     "!package.json",
     "!src",
