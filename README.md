@@ -50,7 +50,7 @@ See [action.yaml](action.yaml) for the full list of inputs.
 | `directory` | No | - | Subdirectory to run commands in | `packages/app` |
 | `windows_verbatim_arguments` | No | `true` | Use verbatim arguments on Windows | `true` |
 | `script` | No | `npx size-limit --json` | Command to generate size-limit results | `npx size-limit --json` |
-| `package_manager` | No | auto-detected | Package manager to use (auto-detected if not provided) | `bun`, `npm`, `yarn`, `pnpm`, `deno` |
+| `package_manager` | No | *auto-detected* | Package manager to use (auto-detected if not provided) | `bun`, `npm`, `yarn`, `pnpm`, `deno` |
 
 ## Example with Custom Configuration 🎯
 
