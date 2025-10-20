@@ -1,4 +1,5 @@
 import { exec } from "@actions/exec";
+import { getGitCommitHash } from "./git";
 import { getPackageManager, PackageManager } from "./package-manager";
 
 /**
@@ -52,11 +53,29 @@ export interface ExecSizeLimitOptions {
 }
 
 /**
+ * The result of the execSizeLimit function.
+ */
+export interface ExecSizeLimitResult {
+  /**
+   * The status of the execution.
+   */
+  status: number;
+  /**
+   * The output of the execution.
+   */
+  output: string;
+  /**
+   * The commit hash of the execution.
+   */
+  commitHash: string;
+}
+
+/**
  * Execute the size limit command.
  * @param options - The options for execution.
- * @returns The status and output of the execution.
+ * @returns The status, output, and commit hash of the execution.
  */
-export async function execSizeLimit(options: ExecSizeLimitOptions): Promise<{ status: number; output: string }> {
+export async function execSizeLimit(options: ExecSizeLimitOptions): Promise<ExecSizeLimitResult> {
   const {
     branch,
     skipStep,
@@ -130,8 +149,12 @@ export async function execSizeLimit(options: ExecSizeLimitOptions): Promise<{ st
     }
   }
 
+  // Get the current commit hash
+  const commitHash = await getGitCommitHash(directory || process.cwd());
+
   return {
     status,
     output,
+    commitHash,
   };
 }

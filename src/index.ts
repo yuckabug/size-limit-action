@@ -1,6 +1,7 @@
 import { getInput, isDebug, setFailed, warning } from "@actions/core";
 import { context, getOctokit } from "@actions/github";
 import {
+  type ComparisonMetadata,
   createSizeLimitComment,
   fetchSizeLimitCommentId,
   formatSizeLimitResultsAsCommentBody,
@@ -50,7 +51,7 @@ async function run(): Promise<void> {
     // 1. Execute the `size-limit` command on the base branch
     // 2. Execute the `size-limit` command on the current branch
 
-    const { output: baseOutput } = await execSizeLimit({
+    const { output: baseOutput, commitHash: baseHash } = await execSizeLimit({
       branch: pullRequest.base.ref,
       skipStep: skipStepInput as "install" | "build" | undefined,
       buildScript: buildScriptInput,
@@ -60,7 +61,11 @@ async function run(): Promise<void> {
       script: scriptInput,
       packageManager: packageManager,
     });
-    const { status, output } = await execSizeLimit({
+    const {
+      status,
+      output,
+      commitHash: headHash,
+    } = await execSizeLimit({
       branch: pullRequest.head.ref,
       skipStep: skipStepInput as "install" | "build" | undefined,
       buildScript: buildScriptInput,
@@ -82,8 +87,14 @@ async function run(): Promise<void> {
       throw new Error(`Error parsing size-limit output. The output should be a JSON. ${message}`);
     }
 
-    // Create the comment body
-    const body = formatSizeLimitResultsAsCommentBody(formatResults(base, current));
+    // Create the comment body with comparison metadata
+    const comparisonMetadata: ComparisonMetadata = {
+      baseBranch: pullRequest.base.ref,
+      baseHash,
+      headBranch: pullRequest.head.ref,
+      headHash,
+    };
+    const body = formatSizeLimitResultsAsCommentBody(formatResults(base, current), comparisonMetadata);
     // Check if we alrady have an existing size limit comment
     const sizeLimitComment = await fetchSizeLimitCommentId(octokit, repo.owner, repo.repo, pullRequest.number);
 

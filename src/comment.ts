@@ -89,21 +89,49 @@ export async function updateSizeLimitComment(
 }
 
 /**
+ * Metadata about the comparison between base and head commits.
+ */
+export interface ComparisonMetadata {
+  /**
+   * The base branch name.
+   */
+  baseBranch: string;
+  /**
+   * The base commit hash.
+   */
+  baseHash: string;
+  /**
+   * The head branch name.
+   */
+  headBranch: string;
+  /**
+   * The head commit hash.
+   */
+  headHash: string;
+}
+
+/**
  * Format the results into a size limit comment body.
  *
  * Note that this won't handle escapes.
  *
  * @see https://github.com/wooorm/markdown-table?tab=readme-ov-file#when-should-i-use-this
  * @param results - The results to format. Assumes they are in a table format.
+ * @param metadata - Optional comparison metadata (branch names and commit hashes).
  * @returns The formatted results as a string.
  */
-export function formatSizeLimitResultsAsCommentBody(results: string[][]): string {
+export function formatSizeLimitResultsAsCommentBody(results: string[][], metadata: ComparisonMetadata): string {
   const lastUpdated = `*Last updated: ${new Date().toUTCString()}*`;
 
   return [
     SIZE_LIMIT_HEADING,
     markdownTable(results),
     // Exit the table and add a new line
+    "",
+    // Add comparison info as bullet points
+    `- **Base:** \`${metadata.baseBranch}\` (\`${metadata.baseHash}\`)`,
+    `- **Head:** \`${metadata.headBranch}\` (\`${metadata.headHash}\`)`,
+    // Exit the bullet points and add a new line
     "",
     lastUpdated,
     SIZE_LIMIT_FOOTER,
