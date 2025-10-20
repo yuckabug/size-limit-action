@@ -400,13 +400,7 @@ describe("formatResults", () => {
 
       const result = formatResults(base, current);
 
-      expect(result[0]).toEqual([
-        "Path",
-        "Size",
-        "Loading time (on slow 3G)",
-        "Running time (on Snapdragon 410)",
-        "Total time",
-      ]);
+      expect(result[0]).toEqual(["Path", "Size", "Loading time", "Running time", "Total time"]);
     });
 
     test("formats time values in seconds", () => {

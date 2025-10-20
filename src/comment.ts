@@ -4,7 +4,13 @@ import { markdownTable } from "markdown-table";
 /**
  * The heading for the size limit comment.
  */
-const SIZE_LIMIT_HEADING = `## ${`size-limit`} report 📦 `;
+const SIZE_LIMIT_HEADING = `## size-limit report 📦 `;
+
+/**
+ * The footer for the size limit comment.
+ * @see https://github.com/ai/size-limit
+ */
+const SIZE_LIMIT_FOOTER = `[Learn more about size-limit](https://github.com/ai/size-limit)`;
 
 /**
  *
@@ -92,5 +98,14 @@ export async function updateSizeLimitComment(
  * @returns The formatted results as a string.
  */
 export function formatSizeLimitResultsAsCommentBody(results: string[][]): string {
-  return [SIZE_LIMIT_HEADING, markdownTable(results)].join("\r\n");
+  const lastUpdated = `*Last updated: ${new Date().toUTCString()}*`;
+
+  return [
+    SIZE_LIMIT_HEADING,
+    markdownTable(results),
+    // Exit the table and add a new line
+    "",
+    lastUpdated,
+    SIZE_LIMIT_FOOTER,
+  ].join("\r\n");
 }
