@@ -117,7 +117,7 @@ export interface ComparisonMetadata {
  *
  * @see https://github.com/wooorm/markdown-table?tab=readme-ov-file#when-should-i-use-this
  * @param results - The results to format. Assumes they are in a table format.
- * @param metadata - Optional comparison metadata (branch names and commit hashes).
+ * @param metadata - Comparison metadata (branch names and commit hashes).
  * @returns The formatted results as a string.
  */
 export function formatSizeLimitResultsAsCommentBody(results: string[][], metadata: ComparisonMetadata): string {
