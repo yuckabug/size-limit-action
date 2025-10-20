@@ -26,7 +26,7 @@ export async function getGitCommitHash(cwd: string): Promise<string> {
  */
 export async function fetchBranch(branch: string, cwd?: string): Promise<void> {
   try {
-    await exec("git", ["fetch", "origin", branch, "--depth=1", "--single-branch", "--no-tags"], {
+    await exec("git", ["fetch", "origin", branch, "--depth=1", "--no-tags"], {
       cwd,
     });
   } catch (error) {
