@@ -94,7 +94,8 @@ export async function execSizeLimit(options: ExecSizeLimitOptions): Promise<Exec
   if (branch) {
     try {
       await exec(`git fetch origin ${branch} --depth=1`);
-      await exec(`git checkout -f ${branch}`);
+      // Use origin/${branch} to avoid ambiguity with local files/directories that have the same name
+      await exec(`git checkout -f origin/${branch}`);
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       throw new Error(`Failed to checkout branch ${branch}: ${message}`);
