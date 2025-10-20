@@ -1,3 +1,4 @@
+import * as path from "node:path";
 import { getInput, isDebug, setFailed, warning } from "@actions/core";
 import { context, getOctokit } from "@actions/github";
 import {
@@ -8,6 +9,7 @@ import {
   updateSizeLimitComment,
 } from "./comment";
 import { formatResults, parseResults, type SizeLimitResult } from "./format-size-limit";
+import { createWorktree, removeWorktree } from "./git";
 import { type PackageManager, packageManagerFromStringToEnum } from "./package-manager";
 import { execSizeLimit } from "./size-limit";
 
@@ -50,31 +52,60 @@ async function run(): Promise<void> {
     // For comparison, we need to:
     // 1. Execute the `size-limit` command on the base branch
     // 2. Execute the `size-limit` command on the current branch
+    // We use git worktrees to run both branches in parallel for better performance
 
-    const { output: baseOutput, commitHash: baseHash } = await execSizeLimit({
-      branch: pullRequest.base.ref,
-      skipStep: skipStepInput as "install" | "build" | undefined,
-      buildScript: buildScriptInput,
-      cleanScript: cleanScriptInput,
-      windowsVerbatimArguments: windowsVerbatimArgumentsInput,
-      directory: directoryInput,
-      script: scriptInput,
-      packageManager: packageManager,
-    });
-    const {
-      status,
-      output,
-      commitHash: headHash,
-    } = await execSizeLimit({
-      branch: pullRequest.head.ref,
-      skipStep: skipStepInput as "install" | "build" | undefined,
-      buildScript: buildScriptInput,
-      cleanScript: cleanScriptInput,
-      windowsVerbatimArguments: windowsVerbatimArgumentsInput,
-      directory: directoryInput,
-      script: scriptInput,
-      packageManager: packageManager,
-    });
+    // Create temporary directories for worktrees
+    const baseWorktreePath = path.join(process.cwd(), ".git-worktree-base");
+    const headWorktreePath = path.join(process.cwd(), ".git-worktree-head");
+
+    let baseOutput: string;
+    let baseHash: string;
+    let status: number;
+    let output: string;
+    let headHash: string;
+
+    try {
+      // Create worktrees for both branches
+      await Promise.all([
+        createWorktree(pullRequest.base.ref, baseWorktreePath),
+        createWorktree(pullRequest.head.ref, headWorktreePath),
+      ]);
+
+      // Run size-limit on both branches
+      const [baseResult, headResult] = await Promise.all([
+        execSizeLimit({
+          branch: pullRequest.base.ref,
+          skipStep: skipStepInput as "install" | "build" | undefined,
+          buildScript: buildScriptInput,
+          cleanScript: cleanScriptInput,
+          windowsVerbatimArguments: windowsVerbatimArgumentsInput,
+          directory: directoryInput,
+          script: scriptInput,
+          packageManager: packageManager,
+          worktreeDirectory: baseWorktreePath,
+        }),
+        execSizeLimit({
+          branch: pullRequest.head.ref,
+          skipStep: skipStepInput as "install" | "build" | undefined,
+          buildScript: buildScriptInput,
+          cleanScript: cleanScriptInput,
+          windowsVerbatimArguments: windowsVerbatimArgumentsInput,
+          directory: directoryInput,
+          script: scriptInput,
+          packageManager: packageManager,
+          worktreeDirectory: headWorktreePath,
+        }),
+      ]);
+
+      baseOutput = baseResult.output;
+      baseHash = baseResult.commitHash;
+      status = headResult.status;
+      output = headResult.output;
+      headHash = headResult.commitHash;
+    } finally {
+      // Clean up worktrees regardless of success or failure
+      await Promise.all([removeWorktree(baseWorktreePath), removeWorktree(headWorktreePath)]);
+    }
 
     let base: Record<string, SizeLimitResult>;
     let current: Record<string, SizeLimitResult>;

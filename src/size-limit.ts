@@ -1,5 +1,6 @@
+import * as path from "node:path";
 import { exec } from "@actions/exec";
-import { getGitCommitHash } from "./git";
+import { fetchBranch, getGitCommitHash } from "./git";
 import { getPackageManager, PackageManager } from "./package-manager";
 
 /**
@@ -50,6 +51,11 @@ export interface ExecSizeLimitOptions {
    * @default `PackageManager.Npm`
    */
   packageManager?: PackageManager;
+  /**
+   * The worktree directory to use instead of checking out branches.
+   * When provided, the function will use this directory as the working directory and skip the git checkout step.
+   */
+  worktreeDirectory?: string;
 }
 
 /**
@@ -85,30 +91,40 @@ export async function execSizeLimit(options: ExecSizeLimitOptions): Promise<Exec
     directory,
     script = "npx size-limit --json",
     packageManager = PackageManager.Npm,
+    worktreeDirectory,
   } = options;
 
   let output = "";
 
-  // If `branch` is provided, checkout the branch
-  // This is so we can compare the size limit of the base branch to the current branch
-  if (branch) {
+  // Determine the working directory
+  // If worktreeDirectory is provided, use it as the base
+  // If directory is also provided, combine them
+  const workingDirectory = worktreeDirectory
+    ? directory
+      ? path.join(worktreeDirectory, directory)
+      : worktreeDirectory
+    : directory;
+
+  // If `branch` is provided and no worktree is being used, checkout the branch
+  // When using worktrees, the branch is already checked out in the worktree directory
+  if (branch && !worktreeDirectory) {
     try {
-      await exec(`git fetch origin ${branch} --depth=1`);
+      await fetchBranch(branch);
       // Use origin/${branch} to avoid ambiguity with local files/directories that have the same name
-      await exec(`git checkout -f origin/${branch}`);
+      await exec("git", ["checkout", "-f", `origin/${branch}`]);
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       throw new Error(`Failed to checkout branch ${branch}: ${message}`);
     }
   }
 
-  const manager = packageManager || (await getPackageManager(directory));
+  const manager = packageManager || (await getPackageManager(workingDirectory));
 
   // If `skipStep` is not `install`, run the install command
   if (skipStep !== "install") {
     try {
       await exec(`${manager} install`, [], {
-        cwd: directory,
+        cwd: workingDirectory,
       });
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
@@ -119,7 +135,7 @@ export async function execSizeLimit(options: ExecSizeLimitOptions): Promise<Exec
   if (skipStep !== "build") {
     try {
       await exec(`${manager} run ${buildScript}`, [], {
-        cwd: directory,
+        cwd: workingDirectory,
       });
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
@@ -135,14 +151,14 @@ export async function execSizeLimit(options: ExecSizeLimitOptions): Promise<Exec
         output += data.toString();
       },
     },
-    cwd: directory,
+    cwd: workingDirectory,
   });
 
   // If `cleanScript` is provided, run the clean script
   if (cleanScript) {
     try {
       await exec(`${manager} run ${cleanScript}`, [], {
-        cwd: directory,
+        cwd: workingDirectory,
       });
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
@@ -151,7 +167,7 @@ export async function execSizeLimit(options: ExecSizeLimitOptions): Promise<Exec
   }
 
   // Get the current commit hash
-  const commitHash = await getGitCommitHash(directory || process.cwd());
+  const commitHash = await getGitCommitHash(workingDirectory || process.cwd());
 
   return {
     status,
