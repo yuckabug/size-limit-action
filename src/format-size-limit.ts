@@ -8,13 +8,7 @@ const SIZE_LIMIT_RESULTS_HEADER: string[] = ["Path", "Size"];
 /**
  * The header for time results.
  */
-const SIZE_LIMIT_TIME_RESULTS_HEADER: string[] = [
-  "Path",
-  "Size",
-  "Loading time (on slow 3G)",
-  "Running time (on Snapdragon 410)",
-  "Total time",
-];
+const SIZE_LIMIT_TIME_RESULTS_HEADER: string[] = ["Path", "Size", "Loading time", "Running time", "Total time"];
 
 /**
  * A change.

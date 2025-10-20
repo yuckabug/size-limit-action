@@ -7,6 +7,12 @@ import { markdownTable } from "markdown-table";
 const SIZE_LIMIT_HEADING = `## ${`size-limit`} report 📦 `;
 
 /**
+ * The footer for the size limit comment.
+ * @see https://github.com/ai/size-limit
+ */
+const SIZE_LIMIT_FOOTER = `[Learn more about size-limit](https://github.com/ai/size-limit)`;
+
+/**
  *
  * Fetch the size limit comment ID for a given pull request.
  * @param octokit - The octokit instance.
@@ -92,5 +98,7 @@ export async function updateSizeLimitComment(
  * @returns The formatted results as a string.
  */
 export function formatSizeLimitResultsAsCommentBody(results: string[][]): string {
-  return [SIZE_LIMIT_HEADING, markdownTable(results)].join("\r\n");
+  const lastUpdated = `*Last updated: ${new Date().toUTCString()}*`;
+
+  return [SIZE_LIMIT_HEADING, markdownTable(results), lastUpdated, SIZE_LIMIT_FOOTER].join("\r\n");
 }
