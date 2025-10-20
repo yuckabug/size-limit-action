@@ -27,3 +27,11 @@ jobs:
 
       - name: run build
         run: bun run build
+
+      - name: check dist is up-to-date
+        run: |
+          if [ -n "$(git status --porcelain dist)" ]; then
+            echo "::error::dist/ is out of date. Please run 'bun run build' and commit the changes."
+            git diff dist
+            exit 1
+          fi
