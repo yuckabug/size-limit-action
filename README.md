@@ -26,31 +26,29 @@ jobs:
   size:
     runs-on: ubuntu-latest
     steps:
-      # 
+      #
       - uses: actions/checkout@v4
 
       - name: run size-limit
         # You should always pin the action to a specific version
         # `main` is used here as an example
         uses: yuckabug/size-limit-action@main
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
 ```
 
 ## Inputs 📥
 
 See [action.yaml](action.yaml) for the full list of inputs.
 
-| Parameter | Required | Default | Description | Example |
-|-----------|----------|---------|-------------|---------|
-| `github_token` | **Yes** | - | GitHub access token for PR comments | `${{ secrets.GITHUB_TOKEN }}` |
-| `build_script` | No | `build` | Build script name to run before size-limit | `build` |
-| `clean_script` | No | - | Cleanup script to run after analysis | `clean` |
-| `skip_step` | No | - | Skip either `install` or `build` step | `install` or `build` |
-| `directory` | No | - | Subdirectory to run commands in | `packages/app` |
-| `windows_verbatim_arguments` | No | `true` | Use verbatim arguments on Windows | `true` |
-| `script` | No | `npx size-limit --json` | Command to generate size-limit results | `npx size-limit --json` |
-| `package_manager` | No | *auto-detected* | Package manager to use (auto-detected if not provided) | `bun`, `npm`, `yarn`, `pnpm`, `deno` |
+| Parameter                    | Required | Default                 | Description                                            | Example                              |
+| ---------------------------- | -------- | ----------------------- | ------------------------------------------------------ | ------------------------------------ |
+| `github_token`               | No       | `${{ github.token }}`   | GitHub access token for PR comments                    | `${{ secrets.GITHUB_TOKEN }}`        |
+| `build_script`               | No       | `build`                 | Build script name to run before size-limit             | `build`                              |
+| `clean_script`               | No       | -                       | Cleanup script to run after analysis                   | `clean`                              |
+| `skip_step`                  | No       | -                       | Skip either `install` or `build` step                  | `install` or `build`                 |
+| `directory`                  | No       | -                       | Subdirectory to run commands in                        | `packages/app`                       |
+| `windows_verbatim_arguments` | No       | `true`                  | Use verbatim arguments on Windows                      | `true`                               |
+| `script`                     | No       | `npx size-limit --json` | Command to generate size-limit results                 | `npx size-limit --json`              |
+| `package_manager`            | No       | _auto-detected_         | Package manager to use (auto-detected if not provided) | `bun`, `npm`, `yarn`, `pnpm`, `deno` |
 
 ## Example with Custom Configuration 🎯
 
@@ -75,7 +73,7 @@ See [action.yaml](action.yaml) for the full list of inputs.
 
 ## Acknowledgments 🙏💚
 
-This project is based on [andresz1/size-limit-action](https://github.com/andresz1/size-limit-action) (ISC License). 
+This project is based on [andresz1/size-limit-action](https://github.com/andresz1/size-limit-action) (ISC License).
 
 See [NOTICE.md](NOTICE.md) for full attribution details.
 

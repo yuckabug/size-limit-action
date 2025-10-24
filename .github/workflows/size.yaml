@@ -21,5 +21,3 @@ jobs:
 
       - name: run size-limit
         uses: ./
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
