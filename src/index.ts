@@ -21,7 +21,7 @@ async function run(): Promise<void> {
     }
 
     // See `action.yaml` for input descriptions
-    const tokenInput = getInput("github_token", { required: true });
+    const tokenInput = getInput("github_token");
     const skipStepInput = getInput("skip_step", { required: false });
     const buildScriptInput = getInput("build_script", { required: false });
     const cleanScriptInput = getInput("clean_script", { required: false });
